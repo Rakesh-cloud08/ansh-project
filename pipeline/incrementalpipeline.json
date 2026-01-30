@@ -130,7 +130,7 @@
 				}
 			},
 			{
-				"name": "Copy data1",
+				"name": "watermark",
 				"type": "Copy",
 				"dependsOn": [
 					{
