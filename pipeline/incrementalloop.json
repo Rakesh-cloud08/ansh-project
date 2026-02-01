@@ -43,7 +43,7 @@
 								"source": {
 									"type": "AzureSqlSource",
 									"sqlReaderQuery": {
-										"value": "select * from @{pipeline().parameters.schema}.@{pipeline().parameters.table} where @{pipeline().parameters.cdc}> '@{if(empty(pipeline().parameters.from_date),activity('last_cdc').output.firstRow.cdc,pipeline().parameters.from_date)}'",
+										"value": "select * from @{item().schema}.@{item().table} where @{item().cdc_col}> '@{if(empty(item().from_date),activity('last_cdc').output.firstRow.cdc,item().from_date)}'",
 										"type": "Expression"
 									},
 									"queryTimeout": "02:00:00",
@@ -81,11 +81,11 @@
 									"parameters": {
 										"container": "bronze",
 										"folder": {
-											"value": "@pipeline().parameters.table",
+											"value": "@item().table",
 											"type": "Expression"
 										},
 										"file": {
-											"value": "@concat(pipeline().parameters.table,'_',variables('current'))",
+											"value": "@concat(item().table,'_',variables('current'))",
 											"type": "Expression"
 										}
 									}
@@ -123,7 +123,7 @@
 										"container": "bronze",
 										"file": "cdc.json",
 										"folder": {
-											"value": "@{pipeline().parameters.table}_cdc",
+											"value": "@{item().table}_cdc",
 											"type": "Expression"
 										}
 									}
@@ -259,7 +259,7 @@
 													"container": "bronze",
 													"file": "empty.json",
 													"folder": {
-														"value": "@{pipeline().parameters.table}_cdc",
+														"value": "@{item().table}_cdc",
 														"type": "Expression"
 													}
 												}
@@ -272,7 +272,10 @@
 												"parameters": {
 													"container": "bronze",
 													"file": "cdc.json",
-													"folder": "cdc"
+													"folder": {
+														"value": "@{item().table}_cdc",
+														"type": "Expression"
+													}
 												}
 											}
 										]
@@ -298,7 +301,7 @@
 												{
 													"type": "Query",
 													"text": {
-														"value": "select max(@{pipeline().parameters.cdc}) as cdc from @{pipeline().parameters.schema}.@{pipeline().parameters.table}",
+														"value": "select max(@{iem().cdc_col}) as cdc from @{item().schema}.@{item().table}",
 														"type": "Expression"
 													}
 												}
