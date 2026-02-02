@@ -161,7 +161,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"expression": {
-									"value": "@greater(activity('sqltodatalake').output.dataRead,0)",
+									"value": "@greater(activity('sqltodatalake').output.dataRead,0)\n\n",
 									"type": "Expression"
 								},
 								"ifFalseActivities": [
@@ -184,10 +184,13 @@
 												"parameters": {
 													"container": "bronze",
 													"folder": {
-														"value": "@pipeline().parameters.table",
+														"value": "@item().table",
 														"type": "Expression"
 													},
-													"file": "@concat(pipeline().parameters.table,'_',variables('current'))"
+													"file": {
+														"value": "@concat(item().table,'_',variables('current'))",
+														"type": "Expression"
+													}
 												}
 											},
 											"enableLogging": false,
@@ -301,7 +304,7 @@
 												{
 													"type": "Query",
 													"text": {
-														"value": "select max(@{iem().cdc_col}) as cdc from @{item().schema}.@{item().table}",
+														"value": "select max(@{item().cdc_col}) as cdc from @{item().schema}.@{item().table}",
 														"type": "Expression"
 													}
 												}
@@ -341,13 +344,13 @@
 					{
 						"schema": "dbo",
 						"table": "Factstream",
-						"cdc_col": "updated_at",
+						"cdc_col": "stream_timestamp",
 						"from_date": ""
 					},
 					{
 						"schema": "dbo",
 						"table": "DimDate",
-						"cdc_col": "updated_at",
+						"cdc_col": "date",
 						"from_date": ""
 					}
 				]
